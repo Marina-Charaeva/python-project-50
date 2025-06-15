@@ -2,14 +2,12 @@
 __all__ = ['CBaseLoader', 'CSafeLoader', 'CLoader',
         'CBaseDumper', 'CSafeDumper', 'CDumper']
 
-from _yaml import CParser, CEmitter
-
+from _yaml import CEmitter, CParser
 from constructor import *
-
-from serializer import *
 from representer import *
-
 from resolver import *
+from serializer import *
+
 
 class CBaseLoader(CParser, BaseConstructor, BaseResolver):
 
@@ -18,6 +16,7 @@ class CBaseLoader(CParser, BaseConstructor, BaseResolver):
         BaseConstructor.__init__(self)
         BaseResolver.__init__(self)
 
+
 class CSafeLoader(CParser, SafeConstructor, Resolver):
 
     def __init__(self, stream):
@@ -25,12 +24,14 @@ class CSafeLoader(CParser, SafeConstructor, Resolver):
         SafeConstructor.__init__(self)
         Resolver.__init__(self)
 
+
 class CLoader(CParser, Constructor, Resolver):
 
     def __init__(self, stream):
         CParser.__init__(self, stream)
         Constructor.__init__(self)
         Resolver.__init__(self)
+
 
 class CBaseDumper(CEmitter, BaseRepresenter, BaseResolver):
 
@@ -49,6 +50,7 @@ class CBaseDumper(CEmitter, BaseRepresenter, BaseResolver):
                 default_flow_style=default_flow_style)
         Resolver.__init__(self)
 
+
 class CSafeDumper(CEmitter, SafeRepresenter, Resolver):
 
     def __init__(self, stream,
@@ -65,6 +67,7 @@ class CSafeDumper(CEmitter, SafeRepresenter, Resolver):
         SafeRepresenter.__init__(self, default_style=default_style,
                 default_flow_style=default_flow_style)
         Resolver.__init__(self)
+
 
 class CDumper(CEmitter, Serializer, Representer, Resolver):
 

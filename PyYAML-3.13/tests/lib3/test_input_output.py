@@ -1,6 +1,12 @@
 
+import codecs
+import io
+import os
+import os.path
+import tempfile
+
 import yaml
-import codecs, io, tempfile, os, os.path
+
 
 def test_unicode_input(unicode_filename, verbose=False):
     data = open(unicode_filename, 'rb').read().decode('utf-8')
@@ -10,9 +16,9 @@ def test_unicode_input(unicode_filename, verbose=False):
     output = yaml.load(io.StringIO(data))
     assert output == value, (output, value)
     for input in [data.encode('utf-8'),
-                    codecs.BOM_UTF8+data.encode('utf-8'),
-                    codecs.BOM_UTF16_BE+data.encode('utf-16-be'),
-                    codecs.BOM_UTF16_LE+data.encode('utf-16-le')]:
+                    codecs.BOM_UTF8 + data.encode('utf-8'),
+                    codecs.BOM_UTF16_BE + data.encode('utf-16-be'),
+                    codecs.BOM_UTF16_LE + data.encode('utf-16-le')]:
         if verbose:
             print("INPUT:", repr(input[:10]), "...")
         output = yaml.load(input)
@@ -20,15 +26,17 @@ def test_unicode_input(unicode_filename, verbose=False):
         output = yaml.load(io.BytesIO(input))
         assert output == value, (output, value)
 
+
 test_unicode_input.unittest = ['.unicode']
+
 
 def test_unicode_input_errors(unicode_filename, verbose=False):
     data = open(unicode_filename, 'rb').read().decode('utf-8')
     for input in [data.encode('latin1', 'ignore'),
                     data.encode('utf-16-be'), data.encode('utf-16-le'),
-                    codecs.BOM_UTF8+data.encode('utf-16-be'),
-                    codecs.BOM_UTF16_BE+data.encode('utf-16-le'),
-                    codecs.BOM_UTF16_LE+data.encode('utf-8')+b'!']:
+                    codecs.BOM_UTF8 + data.encode('utf-16-be'),
+                    codecs.BOM_UTF16_BE + data.encode('utf-16-le'),
+                    codecs.BOM_UTF16_LE + data.encode('utf-8') + b'!']:
         try:
             yaml.load(input)
         except yaml.YAMLError as exc:
@@ -44,7 +52,9 @@ def test_unicode_input_errors(unicode_filename, verbose=False):
         else:
             raise AssertionError("expected an exception")
 
+
 test_unicode_input_errors.unittest = ['.unicode']
+
 
 def test_unicode_output(unicode_filename, verbose=False):
     data = open(unicode_filename, 'rb').read().decode('utf-8')
@@ -92,7 +102,9 @@ def test_unicode_output(unicode_filename, verbose=False):
             assert isinstance(data1, str), (type(data1), encoding)
             assert isinstance(data2, str), (type(data2), encoding)
 
+
 test_unicode_output.unittest = ['.unicode']
+
 
 def test_file_output(unicode_filename, verbose=False):
     data = open(unicode_filename, 'rb').read().decode('utf-8')
@@ -120,14 +132,16 @@ def test_file_output(unicode_filename, verbose=False):
         if os.path.exists(filename):
             os.unlink(filename)
 
+
 test_file_output.unittest = ['.unicode']
+
 
 def test_unicode_transfer(unicode_filename, verbose=False):
     data = open(unicode_filename, 'rb').read().decode('utf-8')
     for encoding in [None, 'utf-8', 'utf-16-be', 'utf-16-le']:
         input = data
         if encoding is not None:
-            input = ('\ufeff'+input).encode(encoding)
+            input = ('\ufeff' + input).encode(encoding)
         output1 = yaml.emit(yaml.parse(input), allow_unicode=True)
         if encoding is None:
             stream = io.StringIO()
@@ -141,6 +155,7 @@ def test_unicode_transfer(unicode_filename, verbose=False):
         else:
             assert isinstance(output2, bytes), (type(output1), encoding)
             output2.decode(encoding)
+
 
 test_unicode_transfer.unittest = ['.unicode']
 

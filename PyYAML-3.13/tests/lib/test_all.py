@@ -1,5 +1,7 @@
 
-import sys, yaml, test_appliance
+import test_appliance
+import yaml
+
 
 def main(args=None):
     collections = []
@@ -9,6 +11,7 @@ def main(args=None):
         import test_yaml_ext
         collections.append(test_yaml_ext)
     return test_appliance.run(collections, args)
+
 
 if __name__ == '__main__':
     main()

@@ -10,10 +10,8 @@ Written by Kirill Simonov <xi@resolvent.net>.
 License: Whatever suitable for inclusion into the Pygments package.
 """
 
-from pygments.lexer import  \
-        ExtendedRegexLexer, LexerContext, include, bygroups
-from pygments.token import  \
-        Text, Comment, Punctuation, Name, Literal
+from pygments.lexer import ExtendedRegexLexer, LexerContext, bygroups, include
+from pygments.token import Comment, Literal, Name, Punctuation, Text
 
 __all__ = ['YAMLLexer']
 
@@ -39,6 +37,7 @@ def something(TokenClass):
         context.pos = match.end()
     return callback
 
+
 def reset_indent(TokenClass):
     """Reset the indentation levels."""
     def callback(lexer, match, context):
@@ -50,6 +49,7 @@ def reset_indent(TokenClass):
         yield match.start(), TokenClass, text
         context.pos = match.end()
     return callback
+
 
 def save_indent(TokenClass, start=False):
     """Save a possible indentation level."""
@@ -69,9 +69,10 @@ def save_indent(TokenClass, start=False):
         if text:
             yield match.start(), TokenClass, text
         if extra:
-            yield match.start()+len(text), TokenClass.Error, extra
+            yield match.start() + len(text), TokenClass.Error, extra
         context.pos = match.end()
     return callback
+
 
 def set_indent(TokenClass, implicit=False):
     """Set the previously saved indentation level."""
@@ -85,6 +86,7 @@ def set_indent(TokenClass, implicit=False):
         yield match.start(), TokenClass, text
         context.pos = match.end()
     return callback
+
 
 def set_block_scalar_indent(TokenClass):
     """Set an explicit indentation level for a block scalar."""
@@ -103,6 +105,7 @@ def set_block_scalar_indent(TokenClass):
             context.pos = match.end()
     return callback
 
+
 def parse_block_scalar_empty_line(IndentTokenClass, ContentTokenClass):
     """Process an empty line in a block scalar."""
     def callback(lexer, match, context):
@@ -115,10 +118,11 @@ def parse_block_scalar_empty_line(IndentTokenClass, ContentTokenClass):
             indentation = text[:context.block_scalar_indent]
             content = text[context.block_scalar_indent:]
             yield match.start(), IndentTokenClass, indentation
-            yield (match.start()+context.block_scalar_indent,
+            yield (match.start() + context.block_scalar_indent,
                     ContentTokenClass, content)
         context.pos = match.end()
     return callback
+
 
 def parse_block_scalar_indent(TokenClass):
     """Process indentation spaces in a block scalar."""
@@ -139,6 +143,7 @@ def parse_block_scalar_indent(TokenClass):
             yield match.start(), TokenClass, text
             context.pos = match.end()
     return callback
+
 
 def parse_plain_scalar_indent(TokenClass):
     """Process indentation spaces in a plain scalar."""
@@ -244,7 +249,7 @@ class YAMLLexer(ExtendedRegexLexer):
         ],
 
         # tags, anchors, aliases
-        'descriptors' : [
+        'descriptors': [
             # a full-form tag
             (r'!<[0-9A-Za-z;/?:@&=+$,_.!~*\'()\[\]%-]+>', Name.Type),
             # a tag in the form '!', '!suffix' or '!handle!suffix'

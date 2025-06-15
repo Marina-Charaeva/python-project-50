@@ -1,6 +1,7 @@
 
 import yaml
 
+
 def test_marks(marks_filename, verbose=False):
     inputs = open(marks_filename, 'r').read().split('---\n')[1:]
     for input in inputs:
@@ -22,7 +23,8 @@ def test_marks(marks_filename, verbose=False):
         assert snippet.count('\n') == 1, snippet.count('\n')
         data, pointer = snippet.split('\n')
         assert len(data) < 82, len(data)
-        assert data[len(pointer)-1] == '*', data[len(pointer)-1]
+        assert data[len(pointer) - 1] == '*', data[len(pointer) - 1]
+
 
 test_marks.unittest = ['.marks']
 

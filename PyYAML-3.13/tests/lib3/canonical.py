@@ -1,8 +1,13 @@
 
-import yaml, yaml.composer, yaml.constructor, yaml.resolver
+import yaml
+import yaml.composer
+import yaml.constructor
+import yaml.resolver
+
 
 class CanonicalError(yaml.YAMLError):
     pass
+
 
 class CanonicalScanner:
 
@@ -12,7 +17,7 @@ class CanonicalScanner:
                 data = data.decode('utf-8')
             except UnicodeDecodeError:
                 raise CanonicalError("utf-8 stream is expected")
-        self.data = data+'\0'
+        self.data = data + '\0'
         self.index = 0
         self.tokens = []
         self.scanned = False
@@ -39,7 +44,7 @@ class CanonicalScanner:
             self.scan()
         token = self.tokens.pop(0)
         if choice and not isinstance(token, choice):
-            raise CanonicalError("unexpected token "+repr(token))
+            raise CanonicalError("unexpected token " + repr(token))
         return token
 
     def get_token_value(self):
@@ -56,7 +61,7 @@ class CanonicalScanner:
                 break
             elif ch == '%':
                 self.tokens.append(self.scan_directive())
-            elif ch == '-' and self.data[self.index:self.index+3] == '---':
+            elif ch == '-' and self.data[self.index:self.index + 3] == '---':
                 self.index += 3
                 self.tokens.append(yaml.DocumentStartToken(None, None))
             elif ch == '[':
@@ -93,8 +98,8 @@ class CanonicalScanner:
     DIRECTIVE = '%YAML 1.1'
 
     def scan_directive(self):
-        if self.data[self.index:self.index+len(self.DIRECTIVE)] == self.DIRECTIVE and \
-                self.data[self.index+len(self.DIRECTIVE)] in ' \n\0':
+        if self.data[self.index:self.index + len(self.DIRECTIVE)] == self.DIRECTIVE and \
+                self.data[self.index + len(self.DIRECTIVE)] in ' \n\0':
             self.index += len(self.DIRECTIVE)
             return yaml.DirectiveToken('YAML', (1, 1), None, None)
         else:
@@ -121,11 +126,11 @@ class CanonicalScanner:
         if not value:
             value = '!'
         elif value[0] == '!':
-            value = 'tag:yaml.org,2002:'+value[1:]
+            value = 'tag:yaml.org,2002:' + value[1:]
         elif value[0] == '<' and value[-1] == '>':
             value = value[1:-1]
         else:
-            value = '!'+value
+            value = '!' + value
         return yaml.TagToken(value, None, None)
 
     QUOTE_CODES = {
@@ -169,7 +174,7 @@ class CanonicalScanner:
                     ignore_spaces = True
                 elif ch in self.QUOTE_CODES:
                     length = self.QUOTE_CODES[ch]
-                    code = int(self.data[self.index:self.index+length], 16)
+                    code = int(self.data[self.index:self.index + length], 16)
                     chunks.append(chr(code))
                     self.index += length
                 else:
@@ -206,6 +211,7 @@ class CanonicalScanner:
             else:
                 found = True
 
+
 class CanonicalParser:
 
     def __init__(self):
@@ -223,7 +229,7 @@ class CanonicalParser:
             if self.check_token(yaml.DirectiveToken, yaml.DocumentStartToken):
                 self.parse_document()
             else:
-                raise CanonicalError("document is expected, got "+repr(self.tokens[0]))
+                raise CanonicalError("document is expected, got " + repr(self.tokens[0]))
         self.get_token(yaml.StreamEndToken)
         self.events.append(yaml.StreamEndEvent(None, None))
 
@@ -257,7 +263,7 @@ class CanonicalParser:
                 self.events.append(yaml.MappingStartEvent(anchor, tag, None, None))
                 self.parse_mapping()
             else:
-                raise CanonicalError("SCALAR, '[', or '{' is expected, got "+repr(self.tokens[0]))
+                raise CanonicalError("SCALAR, '[', or '{' is expected, got " + repr(self.tokens[0]))
 
     # sequence: SEQUENCE-START (node (ENTRY node)*)? ENTRY? SEQUENCE-END
     def parse_sequence(self):
@@ -315,6 +321,7 @@ class CanonicalParser:
             self.parse()
         return self.events[0]
 
+
 class CanonicalLoader(CanonicalScanner, CanonicalParser,
         yaml.composer.Composer, yaml.constructor.Constructor, yaml.resolver.Resolver):
 
@@ -327,35 +334,48 @@ class CanonicalLoader(CanonicalScanner, CanonicalParser,
         yaml.constructor.Constructor.__init__(self)
         yaml.resolver.Resolver.__init__(self)
 
+
 yaml.CanonicalLoader = CanonicalLoader
+
 
 def canonical_scan(stream):
     return yaml.scan(stream, Loader=CanonicalLoader)
 
+
 yaml.canonical_scan = canonical_scan
+
 
 def canonical_parse(stream):
     return yaml.parse(stream, Loader=CanonicalLoader)
 
+
 yaml.canonical_parse = canonical_parse
+
 
 def canonical_compose(stream):
     return yaml.compose(stream, Loader=CanonicalLoader)
 
+
 yaml.canonical_compose = canonical_compose
+
 
 def canonical_compose_all(stream):
     return yaml.compose_all(stream, Loader=CanonicalLoader)
 
+
 yaml.canonical_compose_all = canonical_compose_all
+
 
 def canonical_load(stream):
     return yaml.load(stream, Loader=CanonicalLoader)
 
+
 yaml.canonical_load = canonical_load
+
 
 def canonical_load_all(stream):
     return yaml.load_all(stream, Loader=CanonicalLoader)
+
 
 yaml.canonical_load_all = canonical_load_all
 

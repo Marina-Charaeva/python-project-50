@@ -1,5 +1,7 @@
 
-import yaml, test_emitter
+import test_emitter
+import yaml
+
 
 def test_loader_error(error_filename, verbose=False):
     try:
@@ -10,7 +12,9 @@ def test_loader_error(error_filename, verbose=False):
     else:
         raise AssertionError("expected an exception")
 
+
 test_loader_error.unittest = ['.loader-error']
+
 
 def test_loader_error_string(error_filename, verbose=False):
     try:
@@ -21,7 +25,9 @@ def test_loader_error_string(error_filename, verbose=False):
     else:
         raise AssertionError("expected an exception")
 
+
 test_loader_error_string.unittest = ['.loader-error']
+
 
 def test_loader_error_single(error_filename, verbose=False):
     try:
@@ -32,7 +38,9 @@ def test_loader_error_single(error_filename, verbose=False):
     else:
         raise AssertionError("expected an exception")
 
+
 test_loader_error_single.unittest = ['.single-loader-error']
+
 
 def test_emitter_error(error_filename, verbose=False):
     events = list(yaml.load(open(error_filename, 'rb'),
@@ -45,19 +53,22 @@ def test_emitter_error(error_filename, verbose=False):
     else:
         raise AssertionError("expected an exception")
 
+
 test_emitter_error.unittest = ['.emitter-error']
+
 
 def test_dumper_error(error_filename, verbose=False):
     code = open(error_filename, 'rb').read()
     try:
+
         import yaml
-        from io import StringIO
         exec(code)
     except yaml.YAMLError as exc:
         if verbose:
             print("%s:" % exc.__class__.__name__, exc)
     else:
         raise AssertionError("expected an exception")
+
 
 test_dumper_error.unittest = ['.dumper-error']
 

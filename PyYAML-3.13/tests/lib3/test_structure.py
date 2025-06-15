@@ -1,6 +1,8 @@
 
-import yaml, canonical
 import pprint
+
+import yaml
+
 
 def _convert_structure(loader):
     if loader.check_event(yaml.ScalarEvent):
@@ -32,6 +34,7 @@ def _convert_structure(loader):
         loader.get_event()
         return '?'
 
+
 def test_structure(data_filename, structure_filename, verbose=False):
     nodes1 = []
     nodes2 = eval(open(structure_filename, 'r').read())
@@ -53,7 +56,9 @@ def test_structure(data_filename, structure_filename, verbose=False):
             print("NODES2:")
             pprint.pprint(nodes2)
 
+
 test_structure.unittest = ['.data', '.structure']
+
 
 def _compare_events(events1, events2, full=False):
     assert len(events1) == len(events2), (len(events1), len(events2))
@@ -66,6 +71,7 @@ def _compare_events(events1, events2, full=False):
                 assert event1.tag == event2.tag, (event1, event2)
         if isinstance(event1, yaml.ScalarEvent):
             assert event1.value == event2.value, (event1, event2)
+
 
 def test_parser(data_filename, canonical_filename, verbose=False):
     events1 = None
@@ -81,7 +87,9 @@ def test_parser(data_filename, canonical_filename, verbose=False):
             print("EVENTS2:")
             pprint.pprint(events2)
 
+
 test_parser.unittest = ['.data', '.canonical']
+
 
 def test_parser_on_canonical(canonical_filename, verbose=False):
     events1 = None
@@ -97,7 +105,9 @@ def test_parser_on_canonical(canonical_filename, verbose=False):
             print("EVENTS2:")
             pprint.pprint(events2)
 
+
 test_parser_on_canonical.unittest = ['.canonical']
+
 
 def _compare_nodes(node1, node2):
     assert node1.__class__ == node2.__class__, (node1, node2)
@@ -112,6 +122,7 @@ def _compare_nodes(node1, node2):
                 item2 = (item2,)
             for subnode1, subnode2 in zip(item1, item2):
                 _compare_nodes(subnode1, subnode2)
+
 
 def test_composer(data_filename, canonical_filename, verbose=False):
     nodes1 = None
@@ -129,7 +140,9 @@ def test_composer(data_filename, canonical_filename, verbose=False):
             print("NODES2:")
             pprint.pprint(nodes2)
 
+
 test_composer.unittest = ['.data', '.canonical']
+
 
 def _make_loader():
     global MyLoader
@@ -137,15 +150,18 @@ def _make_loader():
     class MyLoader(yaml.Loader):
         def construct_sequence(self, node):
             return tuple(yaml.Loader.construct_sequence(self, node))
+
         def construct_mapping(self, node):
             pairs = self.construct_pairs(node)
             pairs.sort(key=(lambda i: str(i)))
             return pairs
+
         def construct_undefined(self, node):
             return self.construct_scalar(node)
 
     MyLoader.add_constructor('tag:yaml.org,2002:map', MyLoader.construct_mapping)
     MyLoader.add_constructor(None, MyLoader.construct_undefined)
+
 
 def _make_canonical_loader():
     global MyCanonicalLoader
@@ -153,15 +169,18 @@ def _make_canonical_loader():
     class MyCanonicalLoader(yaml.CanonicalLoader):
         def construct_sequence(self, node):
             return tuple(yaml.CanonicalLoader.construct_sequence(self, node))
+
         def construct_mapping(self, node):
             pairs = self.construct_pairs(node)
             pairs.sort(key=(lambda i: str(i)))
             return pairs
+
         def construct_undefined(self, node):
             return self.construct_scalar(node)
 
     MyCanonicalLoader.add_constructor('tag:yaml.org,2002:map', MyCanonicalLoader.construct_mapping)
     MyCanonicalLoader.add_constructor(None, MyCanonicalLoader.construct_undefined)
+
 
 def test_constructor(data_filename, canonical_filename, verbose=False):
     _make_loader()
@@ -178,6 +197,7 @@ def test_constructor(data_filename, canonical_filename, verbose=False):
             pprint.pprint(native1)
             print("NATIVE2:")
             pprint.pprint(native2)
+
 
 test_constructor.unittest = ['.data', '.canonical']
 

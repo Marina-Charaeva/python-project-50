@@ -1,7 +1,9 @@
 
-import yaml
-import test_constructor
 import pprint
+
+import test_constructor
+import yaml
+
 
 def test_representer_types(code_filename, verbose=False):
     test_constructor._make_objects()
@@ -34,6 +36,7 @@ def test_representer_types(code_filename, verbose=False):
                     pprint.pprint(native2)
                     print("OUTPUT:")
                     print(output)
+
 
 test_representer_types.unittest = ['.code']
 

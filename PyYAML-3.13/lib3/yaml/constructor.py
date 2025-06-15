@@ -2,13 +2,21 @@
 __all__ = ['BaseConstructor', 'SafeConstructor', 'Constructor',
     'ConstructorError']
 
+import base64
+import binascii
+import collections
+import datetime
+import re
+import sys
+import types
+
 from .error import *
 from .nodes import *
 
-import collections, datetime, base64, binascii, re, sys, types
 
 class ConstructorError(MarkedYAMLError):
     pass
+
 
 class BaseConstructor:
 
@@ -144,15 +152,16 @@ class BaseConstructor:
 
     @classmethod
     def add_constructor(cls, tag, constructor):
-        if not 'yaml_constructors' in cls.__dict__:
+        if 'yaml_constructors' not in cls.__dict__:
             cls.yaml_constructors = cls.yaml_constructors.copy()
         cls.yaml_constructors[tag] = constructor
 
     @classmethod
     def add_multi_constructor(cls, tag_prefix, multi_constructor):
-        if not 'yaml_multi_constructors' in cls.__dict__:
+        if 'yaml_multi_constructors' not in cls.__dict__:
             cls.yaml_multi_constructors = cls.yaml_multi_constructors.copy()
         cls.yaml_multi_constructors[tag_prefix] = multi_constructor
+
 
 class SafeConstructor(BaseConstructor):
 
@@ -208,12 +217,12 @@ class SafeConstructor(BaseConstructor):
         return None
 
     bool_values = {
-        'yes':      True,
-        'no':       False,
-        'true':     True,
-        'false':    False,
-        'on':       True,
-        'off':      False,
+        'yes': True,
+        'no': False,
+        'true': True,
+        'false': False,
+        'on': True,
+        'off': False,
     }
 
     def construct_yaml_bool(self, node):
@@ -231,27 +240,27 @@ class SafeConstructor(BaseConstructor):
         if value == '0':
             return 0
         elif value.startswith('0b'):
-            return sign*int(value[2:], 2)
+            return sign * int(value[2:], 2)
         elif value.startswith('0x'):
-            return sign*int(value[2:], 16)
+            return sign * int(value[2:], 16)
         elif value[0] == '0':
-            return sign*int(value, 8)
+            return sign * int(value, 8)
         elif ':' in value:
             digits = [int(part) for part in value.split(':')]
             digits.reverse()
             base = 1
             value = 0
             for digit in digits:
-                value += digit*base
+                value += digit * base
                 base *= 60
-            return sign*value
+            return sign * value
         else:
-            return sign*int(value)
+            return sign * int(value)
 
     inf_value = 1e300
-    while inf_value != inf_value*inf_value:
+    while inf_value != inf_value * inf_value:
         inf_value *= inf_value
-    nan_value = -inf_value/inf_value   # Trying to make a quiet NaN (like C99).
+    nan_value = -inf_value / inf_value   # Trying to make a quiet NaN (like C99).
 
     def construct_yaml_float(self, node):
         value = self.construct_scalar(node)
@@ -262,7 +271,7 @@ class SafeConstructor(BaseConstructor):
         if value[0] in '+-':
             value = value[1:]
         if value == '.inf':
-            return sign*self.inf_value
+            return sign * self.inf_value
         elif value == '.nan':
             return self.nan_value
         elif ':' in value:
@@ -271,11 +280,11 @@ class SafeConstructor(BaseConstructor):
             base = 1
             value = 0.0
             for digit in digits:
-                value += digit*base
+                value += digit * base
                 base *= 60
-            return sign*value
+            return sign * value
         else:
-            return sign*float(value)
+            return sign * float(value)
 
     def construct_yaml_binary(self, node):
         try:
@@ -413,6 +422,7 @@ class SafeConstructor(BaseConstructor):
                 "could not determine a constructor for the tag %r" % node.tag,
                 node.start_mark)
 
+
 SafeConstructor.add_constructor(
         'tag:yaml.org,2002:null',
         SafeConstructor.construct_yaml_null)
@@ -463,6 +473,7 @@ SafeConstructor.add_constructor(
 
 SafeConstructor.add_constructor(None,
         SafeConstructor.construct_undefined)
+
 
 class Constructor(SafeConstructor):
 
@@ -615,6 +626,7 @@ class Constructor(SafeConstructor):
 
     def construct_python_object_new(self, suffix, node):
         return self.construct_python_object_apply(suffix, node, newobj=True)
+
 
 Constructor.add_constructor(
     'tag:yaml.org,2002:python/none',

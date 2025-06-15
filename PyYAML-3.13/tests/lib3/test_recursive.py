@@ -1,6 +1,7 @@
 
 import yaml
 
+
 class AnInstance:
 
     def __init__(self, foo, bar):
@@ -14,6 +15,7 @@ class AnInstance:
         except RuntimeError:
             return "%s(foo=..., bar=...)" % self.__class__.__name__
 
+
 class AnInstanceWithState(AnInstance):
 
     def __getstate__(self):
@@ -21,6 +23,7 @@ class AnInstanceWithState(AnInstance):
 
     def __setstate__(self, state):
         self.foo, self.bar = state['attributes']
+
 
 def test_recursive(recursive_filename, verbose=False):
     context = globals().copy()
@@ -42,6 +45,7 @@ def test_recursive(recursive_filename, verbose=False):
             print(output1)
             print("OUTPUT2:")
             print(output2)
+
 
 test_recursive.unittest = ['.recursive']
 

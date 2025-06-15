@@ -2,9 +2,10 @@
 __all__ = ['BaseDumper', 'SafeDumper', 'Dumper']
 
 from emitter import *
-from serializer import *
 from representer import *
 from resolver import *
+from serializer import *
+
 
 class BaseDumper(Emitter, Serializer, BaseRepresenter, BaseResolver):
 
@@ -24,6 +25,7 @@ class BaseDumper(Emitter, Serializer, BaseRepresenter, BaseResolver):
                 default_flow_style=default_flow_style)
         Resolver.__init__(self)
 
+
 class SafeDumper(Emitter, Serializer, SafeRepresenter, Resolver):
 
     def __init__(self, stream,
@@ -41,6 +43,7 @@ class SafeDumper(Emitter, Serializer, SafeRepresenter, Resolver):
         SafeRepresenter.__init__(self, default_style=default_style,
                 default_flow_style=default_flow_style)
         Resolver.__init__(self)
+
 
 class Dumper(Emitter, Serializer, Representer, Resolver):
 

@@ -62,12 +62,14 @@
 __all__ = ['Parser', 'ParserError']
 
 from error import MarkedYAMLError
-from tokens import *
 from events import *
 from scanner import *
+from tokens import *
+
 
 class ParserError(MarkedYAMLError):
     pass
+
 
 class Parser(object):
     # Since writing a recursive-descendant parser is a straightforward task, we
@@ -305,10 +307,10 @@ class Parser(object):
                         raise ParserError("while parsing a node", start_mark,
                                 "found undefined tag handle %r" % handle.encode('utf-8'),
                                 tag_mark)
-                    tag = self.tag_handles[handle]+suffix
+                    tag = self.tag_handles[handle] + suffix
                 else:
                     tag = suffix
-            #if tag == u'!':
+            # if tag == u'!':
             #    raise ParserError("while parsing a node", start_mark,
             #            "found non-specific tag '!'", tag_mark,
             #            "Please check 'http://pyyaml.org/wiki/YAMLNonSpecificTag' and share your opinion.")

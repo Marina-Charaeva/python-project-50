@@ -1,23 +1,26 @@
 
-import yaml
+import datetime
 import pprint
 
-import datetime
+import yaml
 import yaml.tokens
+
 
 def execute(code):
     global value
     exec(code)
     return value
 
+
 def _make_objects():
-    global MyLoader, MyDumper, MyTestClass1, MyTestClass2, MyTestClass3, YAMLObject1, YAMLObject2,  \
-            AnObject, AnInstance, AState, ACustomState, InitArgs, InitArgsWithState,    \
-            NewArgs, NewArgsWithState, Reduce, ReduceWithState, MyInt, MyList, MyDict,  \
+    global MyLoader, MyDumper, MyTestClass1, MyTestClass2, MyTestClass3, YAMLObject1, YAMLObject2, \
+            AnObject, AnInstance, AState, ACustomState, InitArgs, InitArgsWithState, \
+            NewArgs, NewArgsWithState, Reduce, ReduceWithState, MyInt, MyList, MyDict, \
             FixedOffset, today, execute
 
     class MyLoader(yaml.Loader):
         pass
+
     class MyDumper(yaml.Dumper):
         pass
 
@@ -26,6 +29,7 @@ def _make_objects():
             self.x = x
             self.y = y
             self.z = z
+
         def __eq__(self, other):
             if isinstance(other, MyTestClass1):
                 return self.__class__, self.__dict__ == other.__class__, other.__dict__
@@ -35,6 +39,7 @@ def _make_objects():
     def construct1(constructor, node):
         mapping = constructor.construct_mapping(node)
         return MyTestClass1(**mapping)
+
     def represent1(representer, native):
         return representer.represent_mapping("!tag1", native.__dict__)
 
@@ -45,16 +50,19 @@ def _make_objects():
         yaml_loader = MyLoader
         yaml_dumper = MyDumper
         yaml_tag = "!tag2"
+
         def from_yaml(cls, constructor, node):
             x = constructor.construct_yaml_int(node)
             return cls(x=x)
         from_yaml = classmethod(from_yaml)
+
         def to_yaml(cls, representer, native):
             return representer.represent_scalar(cls.yaml_tag, str(native.x))
         to_yaml = classmethod(to_yaml)
 
     class MyTestClass3(MyTestClass2):
         yaml_tag = "!tag3"
+
         def from_yaml(cls, constructor, node):
             mapping = constructor.construct_mapping(node)
             if '=' in mapping:
@@ -63,6 +71,7 @@ def _make_objects():
                 mapping['x'] = x
             return cls(**mapping)
         from_yaml = classmethod(from_yaml)
+
         def to_yaml(cls, representer, native):
             return representer.represent_mapping(cls.yaml_tag, native.__dict__)
         to_yaml = classmethod(to_yaml)
@@ -71,9 +80,11 @@ def _make_objects():
         yaml_loader = MyLoader
         yaml_dumper = MyDumper
         yaml_tag = '!foo'
+
         def __init__(self, my_parameter=None, my_another_parameter=None):
             self.my_parameter = my_parameter
             self.my_another_parameter = my_another_parameter
+
         def __eq__(self, other):
             if isinstance(other, YAMLObject1):
                 return self.__class__, self.__dict__ == other.__class__, other.__dict__
@@ -84,16 +95,20 @@ def _make_objects():
         yaml_loader = MyLoader
         yaml_dumper = MyDumper
         yaml_tag = '!bar'
+
         def __init__(self, foo=1, bar=2, baz=3):
             self.foo = foo
             self.bar = bar
             self.baz = baz
+
         def __getstate__(self):
             return {1: self.foo, 2: self.bar, 3: self.baz}
+
         def __setstate__(self, state):
             self.foo = state[1]
             self.bar = state[2]
             self.baz = state[3]
+
         def __eq__(self, other):
             if isinstance(other, YAMLObject2):
                 return self.__class__, self.__dict__ == other.__class__, other.__dict__
@@ -107,11 +122,13 @@ def _make_objects():
             self.bar = bar
             self.baz = baz
             return self
+
         def __cmp__(self, other):
             return cmp((type(self), self.foo, self.bar, self.baz),
                     (type(other), other.foo, other.bar, other.baz))
+
         def __eq__(self, other):
-            return type(self) is type(other) and    \
+            return type(self) is type(other) and \
                     (self.foo, self.bar, self.baz) == (other.foo, other.bar, other.baz)
 
     class AnInstance:
@@ -119,11 +136,13 @@ def _make_objects():
             self.foo = foo
             self.bar = bar
             self.baz = baz
+
         def __cmp__(self, other):
             return cmp((type(self), self.foo, self.bar, self.baz),
                     (type(other), other.foo, other.bar, other.baz))
+
         def __eq__(self, other):
-            return type(self) is type(other) and    \
+            return type(self) is type(other) and \
                     (self.foo, self.bar, self.baz) == (other.foo, other.bar, other.baz)
 
     class AState(AnInstance):
@@ -133,6 +152,7 @@ def _make_objects():
                 '_bar': self.bar,
                 '_baz': self.baz,
             }
+
         def __setstate__(self, state):
             self.foo = state['_foo']
             self.bar = state['_bar']
@@ -141,20 +161,24 @@ def _make_objects():
     class ACustomState(AnInstance):
         def __getstate__(self):
             return (self.foo, self.bar, self.baz)
+
         def __setstate__(self, state):
             self.foo, self.bar, self.baz = state
 
     class NewArgs(AnObject):
         def __getnewargs__(self):
             return (self.foo, self.bar, self.baz)
+
         def __getstate__(self):
             return {}
 
     class NewArgsWithState(AnObject):
         def __getnewargs__(self):
             return (self.foo, self.bar)
+
         def __getstate__(self):
             return self.baz
+
         def __setstate__(self, state):
             self.baz = state
 
@@ -169,6 +193,7 @@ def _make_objects():
     class ReduceWithState(AnObject):
         def __reduce__(self):
             return self.__class__, (self.foo, self.bar), self.baz
+
         def __setstate__(self, state):
             self.baz = state
 
@@ -178,7 +203,8 @@ def _make_objects():
 
     class MyList(list):
         def __init__(self, n=1):
-            self.extend([None]*n)
+            self.extend([None] * n)
+
         def __eq__(self, other):
             return type(self) is type(other) and list(self) == list(other)
 
@@ -186,6 +212,7 @@ def _make_objects():
         def __init__(self, n=1):
             for k in range(n):
                 self[k] = None
+
         def __eq__(self, other):
             return type(self) is type(other) and dict(self) == dict(other)
 
@@ -193,17 +220,22 @@ def _make_objects():
         def __init__(self, offset, name):
             self.__offset = datetime.timedelta(minutes=offset)
             self.__name = name
+
         def utcoffset(self, dt):
             return self.__offset
+
         def tzname(self, dt):
             return self.__name
+
         def dst(self, dt):
             return datetime.timedelta(0)
 
     today = datetime.date.today()
 
+
 def _load_code(expression):
     return eval(expression)
+
 
 def _serialize_value(data):
     if isinstance(data, list):
@@ -222,6 +254,7 @@ def _serialize_value(data):
         return '?'
     else:
         return str(data)
+
 
 def test_constructor_types(data_filename, code_filename, verbose=False):
     _make_objects()
@@ -250,10 +283,12 @@ def test_constructor_types(data_filename, code_filename, verbose=False):
             print("NATIVE2:")
             pprint.pprint(native2)
 
+
 test_constructor_types.unittest = ['.data', '.code']
 
 if __name__ == '__main__':
-    import sys, test_constructor
+    import sys
+
     sys.modules['test_constructor'] = sys.modules['__main__']
     import test_appliance
     test_appliance.run(globals())

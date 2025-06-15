@@ -1,6 +1,7 @@
 
 __all__ = ['Mark', 'YAMLError', 'MarkedYAMLError']
 
+
 class Mark(object):
 
     def __init__(self, name, index, line, column, buffer, pointer):
@@ -16,9 +17,9 @@ class Mark(object):
             return None
         head = ''
         start = self.pointer
-        while start > 0 and self.buffer[start-1] not in u'\0\r\n\x85\u2028\u2029':
+        while start > 0 and self.buffer[start - 1] not in u'\0\r\n\x85\u2028\u2029':
             start -= 1
-            if self.pointer-start > max_length/2-1:
+            if self.pointer - start > max_length / 2 - 1:
                 head = ' ... '
                 start += 5
                 break
@@ -26,24 +27,26 @@ class Mark(object):
         end = self.pointer
         while end < len(self.buffer) and self.buffer[end] not in u'\0\r\n\x85\u2028\u2029':
             end += 1
-            if end-self.pointer > max_length/2-1:
+            if end - self.pointer > max_length / 2 - 1:
                 tail = ' ... '
                 end -= 5
                 break
         snippet = self.buffer[start:end].encode('utf-8')
-        return ' '*indent + head + snippet + tail + '\n'  \
-                + ' '*(indent+self.pointer-start+len(head)) + '^'
+        return ' ' * indent + head + snippet + tail + '\n'  \
+                + ' ' * (indent + self.pointer - start + len(head)) + '^'
 
     def __str__(self):
         snippet = self.get_snippet()
         where = "  in \"%s\", line %d, column %d"   \
-                % (self.name, self.line+1, self.column+1)
+                % (self.name, self.line + 1, self.column + 1)
         if snippet is not None:
-            where += ":\n"+snippet
+            where += ":\n" + snippet
         return where
+
 
 class YAMLError(Exception):
     pass
+
 
 class MarkedYAMLError(YAMLError):
 
@@ -59,7 +62,7 @@ class MarkedYAMLError(YAMLError):
         lines = []
         if self.context is not None:
             lines.append(self.context)
-        if self.context_mark is not None  \
+        if self.context_mark is not None \
             and (self.problem is None or self.problem_mark is None
                     or self.context_mark.name != self.problem_mark.name
                     or self.context_mark.line != self.problem_mark.line

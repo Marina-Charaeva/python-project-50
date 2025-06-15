@@ -5,8 +5,10 @@ from error import YAMLError
 from events import *
 from nodes import *
 
+
 class SerializerError(YAMLError):
     pass
+
 
 class Serializer(object):
 
@@ -40,7 +42,7 @@ class Serializer(object):
             self.emit(StreamEndEvent())
             self.closed = True
 
-    #def __del__(self):
+    # def __del__(self):
     #    self.close()
 
     def serialize(self, node):

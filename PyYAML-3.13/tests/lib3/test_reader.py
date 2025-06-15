@@ -1,6 +1,7 @@
 
 import yaml.reader
 
+
 def _run_reader(data, verbose):
     try:
         stream = yaml.reader.Reader(data)
@@ -11,6 +12,7 @@ def _run_reader(data, verbose):
             print(exc)
     else:
         raise AssertionError("expected an exception")
+
 
 def test_stream_error(error_filename, verbose=False):
     _run_reader(open(error_filename, 'rb'), verbose)
@@ -25,6 +27,7 @@ def test_stream_error(error_filename, verbose=False):
         return
     _run_reader(data, verbose)
     _run_reader(open(error_filename, encoding=encoding), verbose)
+
 
 test_stream_error.unittest = ['.stream-error']
 

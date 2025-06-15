@@ -1,6 +1,8 @@
 
-import yaml
 import pprint
+
+import yaml
+
 
 def test_implicit_resolver(data_filename, detect_filename, verbose=False):
     correct_tag = None
@@ -19,13 +21,16 @@ def test_implicit_resolver(data_filename, detect_filename, verbose=False):
                 print("CHILDREN:")
                 pprint.pprint(node.value)
 
+
 test_implicit_resolver.unittest = ['.data', '.detect']
+
 
 def _make_path_loader_and_dumper():
     global MyLoader, MyDumper
 
     class MyLoader(yaml.Loader):
         pass
+
     class MyDumper(yaml.Dumper):
         pass
 
@@ -42,6 +47,7 @@ def _make_path_loader_and_dumper():
 
     return MyLoader, MyDumper
 
+
 def _convert_node(node):
     if isinstance(node, yaml.ScalarNode):
         return (node.tag, node.value)
@@ -56,6 +62,7 @@ def _convert_node(node):
             value.append((_convert_node(key), _convert_node(item)))
         return (node.tag, value)
 
+
 def test_path_resolver_loader(data_filename, path_filename, verbose=False):
     _make_path_loader_and_dumper()
     nodes1 = list(yaml.compose_all(open(data_filename, 'rb').read(), Loader=MyLoader))
@@ -69,7 +76,9 @@ def test_path_resolver_loader(data_filename, path_filename, verbose=False):
         if verbose:
             print(yaml.serialize_all(nodes1))
 
+
 test_path_resolver_loader.unittest = ['.data', '.path']
+
 
 def test_path_resolver_dumper(data_filename, path_filename, verbose=False):
     _make_path_loader_and_dumper()
@@ -83,6 +92,7 @@ def test_path_resolver_dumper(data_filename, path_filename, verbose=False):
             data1 = _convert_node(node1)
             data2 = _convert_node(node2)
             assert data1 == data2, (data1, data2)
+
 
 test_path_resolver_dumper.unittest = ['.data', '.path']
 

@@ -1,14 +1,9 @@
-def parse_files(file1_data, file2_data):
-    keys = set(file1_data) | set(file2_data)
-    differences = {}
+from .read_file import get_file_extension, read_file
 
-    for key in keys:
-        if key in file1_data and key in file2_data:
-            if file1_data[key] != file2_data[key]:
-                differences[key] = {'status': 'changed', 'old_value': file1_data[key], 'new_value': file2_data[key]}
-        elif key in file1_data:
-            differences[key] = {'status': 'removed', 'old_value': file1_data[key]}
-        else:
-            differences[key] = {'status': 'added', 'new_value': file2_data[key]}
 
-    return difference
+def parse_file(file_path):
+    extension = get_file_extension(file_path)
+    if extension == '.json':
+        return read_file(file_path)
+    else:
+        raise ValueError(f"Unsupported file format: {extension}")

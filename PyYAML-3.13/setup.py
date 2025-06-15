@@ -54,16 +54,23 @@ int main(void) {
 """
 
 
-import sys, os.path, platform
+import os.path
+import platform
+import sys
 
 from distutils import log
-from distutils.core import setup, Command
+from distutils.command.bdist_rpm import bdist_rpm as _bdist_rpm
+from distutils.command.build_ext import build_ext as _build_ext
+from distutils.core import Command, setup
 from distutils.core import Distribution as _Distribution
 from distutils.core import Extension as _Extension
 from distutils.dir_util import mkpath
-from distutils.command.build_ext import build_ext as _build_ext
-from distutils.command.bdist_rpm import bdist_rpm as _bdist_rpm
-from distutils.errors import DistutilsError, CompileError, LinkError, DistutilsPlatformError
+from distutils.errors import (
+    CompileError,
+    DistutilsError,
+    DistutilsPlatformError,
+    LinkError,
+)
 
 if 'setuptools.extension' in sys.modules:
     _Extension = sys.modules['setuptools.extension']._Extension
@@ -73,8 +80,8 @@ if 'setuptools.extension' in sys.modules:
 
 with_cython = False
 try:
-    from Cython.Distutils.extension import Extension as _Extension
     from Cython.Distutils import build_ext as _build_ext
+    from Cython.Distutils.extension import Extension as _Extension
     with_cython = True
 except ImportError:
     pass
@@ -91,7 +98,7 @@ class Distribution(_Distribution):
         _Distribution.__init__(self, attrs)
         if not self.ext_modules:
             return
-        for idx in range(len(self.ext_modules)-1, -1, -1):
+        for idx in range(len(self.ext_modules) - 1, -1, -1):
             ext = self.ext_modules[idx]
             if not isinstance(ext, Extension):
                 continue
@@ -222,7 +229,7 @@ class build_ext(_build_ext):
         log.info("checking if %s is compilable" % ext.feature_name)
         try:
             [obj] = self.compiler.compile([src],
-                    macros=ext.define_macros+[(undef,) for undef in ext.undef_macros],
+                    macros=ext.define_macros + [(undef,) for undef in ext.undef_macros],
                     include_dirs=ext.include_dirs,
                     extra_postargs=(ext.extra_compile_args or []),
                     depends=ext.depends)
@@ -271,10 +278,10 @@ class bdist_rpm(_bdist_rpm):
             if with_ext is None:
                 continue
             if with_ext:
-                features.append('--'+ext.option_name)
+                features.append('--' + ext.option_name)
             else:
-                features.append('--'+ext.neg_option_name)
-        sys.argv[0] = ' '.join([argv0]+features)
+                features.append('--' + ext.neg_option_name)
+        sys.argv[0] = ' '.join([argv0] + features)
         spec_file = _bdist_rpm._make_spec_file(self)
         sys.argv[0] = argv0
         return spec_file

@@ -18,3 +18,8 @@ packages = ["gendiff"]
 
 [project.scripts]
 gendiff = 'gendiff.scripts.gendiff:main'
+
+[tool.ruff]
+line-length = 88
+select = ["E", "F", "W", "I", "B"]
+ignore = ["E203", "W503"]

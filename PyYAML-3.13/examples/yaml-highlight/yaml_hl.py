@@ -1,6 +1,12 @@
 #!/usr/bin/python
 
-import yaml, codecs, sys, os.path, optparse
+import codecs
+import optparse
+import os.path
+import sys
+
+import yaml
+
 
 class Style:
 
@@ -29,10 +35,12 @@ class Style:
     def __setstate__(self, state):
         self.__init__(**state)
 
+
 yaml.add_path_resolver(u'tag:yaml.org,2002:python/object:__main__.Style',
         [None], dict)
 yaml.add_path_resolver(u'tag:yaml.org,2002:pairs',
         [None, u'replaces'], list)
+
 
 class YAMLHighlight:
 
@@ -96,6 +104,7 @@ class YAMLHighlight:
         self.output.write(result.encode('utf-8'))
         if self.style.footer:
             self.output.write(self.style.footer)
+
 
 if __name__ == '__main__':
     parser = optparse.OptionParser()

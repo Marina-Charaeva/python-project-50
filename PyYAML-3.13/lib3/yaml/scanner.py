@@ -29,8 +29,10 @@ __all__ = ['Scanner', 'ScannerError']
 from .error import MarkedYAMLError
 from .tokens import *
 
+
 class ScannerError(MarkedYAMLError):
     pass
+
 
 class SimpleKey:
     # See below simple keys treatment.
@@ -42,6 +44,7 @@ class SimpleKey:
         self.line = line
         self.column = column
         self.mark = mark
+
 
 class Scanner:
 
@@ -182,7 +185,7 @@ class Scanner:
             return self.fetch_document_end()
 
         # TODO: support for BOM within a stream.
-        #if ch == '\uFEFF':
+        # if ch == '\uFEFF':
         #    return self.fetch_bom()    <-- issue BOMToken
 
         # Note: the order of the following checks is NOT significant.
@@ -283,7 +286,7 @@ class Scanner:
         for level in list(self.possible_simple_keys):
             key = self.possible_simple_keys[level]
             if key.line != self.line  \
-                    or self.index-key.index > 1024:
+                    or self.index - key.index > 1024:
                 if key.required:
                     raise ScannerError("while scanning a simple key", key.mark,
                             "could not find expected ':'", self.get_mark())
@@ -301,7 +304,7 @@ class Scanner:
         # position.
         if self.allow_simple_key:
             self.remove_possible_simple_key()
-            token_number = self.tokens_taken+len(self.tokens)
+            token_number = self.tokens_taken + len(self.tokens)
             key = SimpleKey(token_number, required,
                     self.index, self.line, self.column, self.get_mark())
             self.possible_simple_keys[self.flow_level] = key
@@ -321,13 +324,13 @@ class Scanner:
 
     def unwind_indent(self, column):
 
-        ## In flow context, tokens should respect indentation.
-        ## Actually the condition should be `self.indent >= column` according to
-        ## the spec. But this condition will prohibit intuitively correct
-        ## constructions such as
-        ## key : {
-        ## }
-        #if self.flow_level and self.indent > column:
+        # In flow context, tokens should respect indentation.
+        # Actually the condition should be `self.indent >= column` according to
+        # the spec. But this condition will prohibit intuitively correct
+        # constructions such as
+        # key : {
+        # }
+        # if self.flow_level and self.indent > column:
         #    raise ScannerError(None, None,
         #            "invalid intendation or unclosed '[' or '{'",
         #            self.get_mark())
@@ -364,7 +367,6 @@ class Scanner:
         self.tokens.append(StreamStartToken(mark, mark,
             encoding=self.encoding))
         
-
     def fetch_stream_end(self):
 
         # Set the current intendation to -1.
@@ -547,14 +549,14 @@ class Scanner:
             # Add KEY.
             key = self.possible_simple_keys[self.flow_level]
             del self.possible_simple_keys[self.flow_level]
-            self.tokens.insert(key.token_number-self.tokens_taken,
+            self.tokens.insert(key.token_number - self.tokens_taken,
                     KeyToken(key.mark, key.mark))
 
             # If this key starts a new block mapping, we need to add
             # BLOCK-MAPPING-START.
             if not self.flow_level:
                 if self.add_indent(key.column):
-                    self.tokens.insert(key.token_number-self.tokens_taken,
+                    self.tokens.insert(key.token_number - self.tokens_taken,
                             BlockMappingStartToken(key.mark, key.mark))
 
             # There cannot be two simple keys one after another.
@@ -987,14 +989,14 @@ class Scanner:
         self.scan_block_scalar_ignored_line(start_mark)
 
         # Determine the indentation level and go to the first non-empty line.
-        min_indent = self.indent+1
+        min_indent = self.indent + 1
         if min_indent < 1:
             min_indent = 1
         if increment is None:
             breaks, max_indent, end_mark = self.scan_block_scalar_indentation()
             indent = max(min_indent, max_indent)
         else:
-            indent = min_indent+increment-1
+            indent = min_indent + increment - 1
             breaks, end_mark = self.scan_block_scalar_breaks(indent)
         line_break = ''
 
@@ -1025,13 +1027,13 @@ class Scanner:
                 # This is Clark Evans's interpretation (also in the spec
                 # examples):
                 #
-                #if folded and line_break == '\n':
+                # if folded and line_break == '\n':
                 #    if not breaks:
                 #        if self.peek() not in ' \t':
                 #            chunks.append(' ')
                 #        else:
                 #            chunks.append(line_break)
-                #else:
+                # else:
                 #    chunks.append(line_break)
             else:
                 break
@@ -1272,10 +1274,10 @@ class Scanner:
         chunks = []
         start_mark = self.get_mark()
         end_mark = start_mark
-        indent = self.indent+1
+        indent = self.indent + 1
         # We allow zero indentation for scalars, but then we need to check for
         # document separators at the beginning of the line.
-        #if indent == 0:
+        # if indent == 0:
         #    indent = 1
         spaces = []
         while True:
@@ -1286,13 +1288,13 @@ class Scanner:
                 ch = self.peek(length)
                 if ch in '\0 \t\r\n\x85\u2028\u2029'    \
                         or (not self.flow_level and ch == ':' and
-                                self.peek(length+1) in '\0 \t\r\n\x85\u2028\u2029') \
+                                self.peek(length + 1) in '\0 \t\r\n\x85\u2028\u2029') \
                         or (self.flow_level and ch in ',:?[]{}'):
                     break
                 length += 1
             # It's not clear what we should do with ':' in the flow context.
             if (self.flow_level and ch == ':'
-                    and self.peek(length+1) not in '\0 \t\r\n\x85\u2028\u2029,[]{}'):
+                    and self.peek(length + 1) not in '\0 \t\r\n\x85\u2028\u2029,[]{}'):
                 self.forward(length)
                 raise ScannerError("while scanning a plain scalar", start_mark,
                     "found unexpected ':'", self.get_mark(),
@@ -1436,9 +1438,9 @@ class Scanner:
             return ch
         return ''
 
-#try:
+# try:
 #    import psyco
 #    psyco.bind(Scanner)
-#except ImportError:
+# except ImportError:
 #    pass
 

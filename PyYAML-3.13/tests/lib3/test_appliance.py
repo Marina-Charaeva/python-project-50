@@ -1,7 +1,13 @@
 
-import sys, os, os.path, types, traceback, pprint
+import os
+import os.path
+import pprint
+import sys
+import traceback
+import types
 
 DATA = 'tests/data'
+
 
 def find_test_functions(collections):
     if not isinstance(collections, list):
@@ -16,6 +22,7 @@ def find_test_functions(collections):
                 functions.append(value)
     return functions
 
+
 def find_test_filenames(directory):
     filenames = {}
     for filename in os.listdir(directory):
@@ -26,6 +33,7 @@ def find_test_filenames(directory):
             filenames.setdefault(base, []).append(ext)
     filenames = sorted(filenames.items())
     return filenames
+
 
 def parse_arguments(args):
     if args is None:
@@ -50,10 +58,11 @@ def parse_arguments(args):
         include_filenames.extend(os.environ['YAML_TEST_FILENAMES'].split())
     return include_functions, include_filenames, verbose
 
+
 def execute(function, filenames, verbose):
     name = function.__name__
     if verbose:
-        sys.stdout.write('='*75+'\n')
+        sys.stdout.write('=' * 75 + '\n')
         sys.stdout.write('%s(%s)...\n' % (name, ', '.join(filenames)))
     try:
         function(verbose=verbose, *filenames)
@@ -76,6 +85,7 @@ def execute(function, filenames, verbose):
     sys.stdout.flush()
     return (name, filenames, kind, info)
 
+
 def display(results, verbose):
     if results and not verbose:
         sys.stdout.write('\n')
@@ -89,7 +99,7 @@ def display(results, verbose):
             failures += 1
         if kind == 'ERROR':
             errors += 1
-        sys.stdout.write('='*75+'\n')
+        sys.stdout.write('=' * 75 + '\n')
         sys.stdout.write('%s(%s): %s\n' % (name, ', '.join(filenames), kind))
         if kind == 'ERROR':
             traceback.print_exception(file=sys.stdout, *info)
@@ -97,23 +107,24 @@ def display(results, verbose):
             sys.stdout.write('Traceback (most recent call last):\n')
             traceback.print_tb(info[2], file=sys.stdout)
             sys.stdout.write('%s: see below\n' % info[0].__name__)
-            sys.stdout.write('~'*75+'\n')
+            sys.stdout.write('~' * 75 + '\n')
             for arg in info[1].args:
                 pprint.pprint(arg, stream=sys.stdout)
         for filename in filenames:
-            sys.stdout.write('-'*75+'\n')
+            sys.stdout.write('-' * 75 + '\n')
             sys.stdout.write('%s:\n' % filename)
             data = open(filename, 'r', errors='replace').read()
             sys.stdout.write(data)
             if data and data[-1] != '\n':
                 sys.stdout.write('\n')
-    sys.stdout.write('='*75+'\n')
+    sys.stdout.write('=' * 75 + '\n')
     sys.stdout.write('TESTS: %s\n' % total)
     if failures:
         sys.stdout.write('FAILURES: %s\n' % failures)
     if errors:
         sys.stdout.write('ERRORS: %s\n' % errors)
     return not (failures or errors)
+
 
 def run(collections, args=None):
     test_functions = find_test_functions(collections)
@@ -131,7 +142,7 @@ def run(collections, args=None):
                 for ext in function.unittest:
                     if ext not in exts:
                         break
-                    filenames.append(os.path.join(DATA, base+ext))
+                    filenames.append(os.path.join(DATA, base + ext))
                 else:
                     skip_exts = getattr(function, 'skip', [])
                     for skip_ext in skip_exts:

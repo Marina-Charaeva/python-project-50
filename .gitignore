@@ -1,0 +1,15 @@
+__pycache__
+dist/
+.python-version
+.venv/
+.pytest_cache/
+*.egg-info
+.idea/
+.vscode/
+coverage/
+.coverage
+test-coverage-tool
+htmlcov/
+PyYAML-3.13/
+PyYAML-3.13.tar.gz
+uv.lock
