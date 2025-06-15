@@ -11,7 +11,7 @@ gendiff:
 	uv run gendiff
 
 lint:
-	uv run ruff check gendiff
+	uv run flake8 gendiff
 
 diff:
 	uv run gendiff gendiff/file1.json gendiff/file2.json
