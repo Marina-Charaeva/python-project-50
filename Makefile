@@ -17,6 +17,6 @@ diff:
 	uv run gendiff gendiff/file1.json gendiff/file2.json
 
 test:
-	uv run pytest -vv
+	uv run pytest -v tests/
 
-.PHONY: lint test install
+.PHONY: test install
