@@ -1,5 +1,5 @@
 install:
-	pipx install -e .
+	pipx install --force -e .
 
 build:
 	uv build -o /home/charaeva/python-project-50/dist
@@ -11,7 +11,7 @@ gendiff:
 	uv run gendiff
 
 lint:
-	ruff check gendiff
+	~/.local/bin/ruff check gendiff
 
 diff:
 	uv run gendiff gendiff/file1.json gendiff/file2.json
