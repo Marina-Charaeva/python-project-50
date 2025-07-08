@@ -11,7 +11,7 @@ gendiff:
 	uv run gendiff
 
 lint:
-	~/.local/bin/ruff check gendiff
+	ruff check gendiff
 
 diff:
 	uv run gendiff gendiff/file1.json gendiff/file2.json
