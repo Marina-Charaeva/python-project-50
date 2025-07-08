@@ -1,28 +1,34 @@
 name: CI check
-on: push
+on: [push, pull_request]
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: '3.13'
+      
       - name: Install dependencies
         run: |
-          pip install uv
+          python -m pip install --upgrade pip
+          pip install uv ruff  # Добавили ruff в основные зависимости
           make install
-          pip install flake8
+      
       - name: Run linter
         run: |
-          make lint
+          python -m ruff check gendiff  # Прямой вызов через python -m
+      
       - name: Run Tests
         run: |
           make test
+      
       - name: Test & publish code coverage
+        if: github.ref == 'refs/heads/main'
         uses: paambaati/codeclimate-action@v3.2.0
-        if: github.ref_name == 'main'
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
