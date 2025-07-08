@@ -1,3 +1,6 @@
 [run]
 source = gendiff
 omit = */tests/*
+
+[xml]
+output = coverage.xml
