@@ -21,25 +21,17 @@ jobs:
       - name: Run linter
         run: python -m ruff check gendiff
       
-      - name: Upload to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage-cobertura.xml
-          flags: unittests
-
-      - name: Run Tests with Coverage
+      - name: Generate coverage report
         run: |
-          python -m pytest --cov=gendiff --cov-report xml tests/
+          python -m pytest --cov=gendiff --cov-report xml --cov-report term tests/
           mv coverage.xml coverage-cobertura.xml
       
-      - name: Upload coverage to CodeClimate
+      - name: Upload to CodeClimate
         if: github.ref == 'refs/heads/main'
         uses: paambaati/codeclimate-action@v3.2.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
           coverageCommand: python -m pytest --cov=gendiff --cov-report xml tests/
-          coverageLocations: |
-            ${{ github.workspace }}/coverage.xml:coverage.py.xml
+          coverageLocations: ${{ github.workspace }}/coverage-cobertura.xml:coverage.py.xml
           debug: true
