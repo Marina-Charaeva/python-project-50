@@ -1,5 +1,5 @@
 install:
-	uv sync --force-reinstall
+	pipx install -e .
 
 build:
 	uv build -o /home/charaeva/python-project-50/dist
@@ -11,12 +11,12 @@ gendiff:
 	uv run gendiff
 
 lint:
-	uv run flake8 gendiff
+	ruff check gendiff
 
 diff:
 	uv run gendiff gendiff/file1.json gendiff/file2.json
 
 test:
-	uv run pytest -v tests/
+	PYTHONPATH=$(shell pwd) pytest -v tests/
 
-.PHONY: test install
+.PHONY: test lint install
