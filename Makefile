@@ -19,4 +19,7 @@ diff:
 test:
 	PYTHONPATH=$(shell pwd) pytest -v tests/
 
+test-coverage:
+	python -m pytest --cov=gendiff --cov-report xml tests/
+
 .PHONY: test lint install
