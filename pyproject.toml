@@ -27,4 +27,5 @@ select = ["E", "F", "W", "I", "B"]
 ignore = ["E203"]
 
 [tool.pytest.ini_options]
-norecursedirs = ["PyYAML-3.13"]
+testpaths = ["tests"]
+addopts = "--cov=gendiff --cov-report=xml"
