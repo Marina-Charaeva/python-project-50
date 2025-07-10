@@ -21,10 +21,11 @@ jobs:
         run: |
           python -m pytest --cov=gendiff --cov-report=xml:coverage.xml --cov-report=term tests/
       
-      - name: Verify coverage file exists
+      - name: Verify coverage file
         run: |
           ls -la coverage.xml
-          cat coverage.xml | head -n 5  # Проверяем первые 5 строк файла
+          head -n 5 coverage.xml
+          file coverage.xml
       
       - name: Upload to CodeClimate
         if: github.ref == 'refs/heads/main'
