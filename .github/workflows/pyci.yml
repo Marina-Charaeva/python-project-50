@@ -15,22 +15,32 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov
+          pip install pytest pytest-cov==4.1.0 coverage==7.2.0 jq flake8
           pip install -e .[test]
+      
+      - name: Run linter
+        run: |
+          flake8 gendiff tests
       
       - name: Run tests with coverage
         run: |
-          python -m pytest --cov=gendiff --cov-report=json:coverage.json --cov-report=term tests/
+          python -m pytest --cov=gendiff --cov-report=lcov:coverage.lcov --cov-report=term tests/
       
       - name: Verify coverage file
         run: |
           ls -la
-          head -n 5 coverage.json
-          file coverage.json
-          cat coverage.json | jq . || echo "Invalid JSON in coverage.json"
+          head -n 5 coverage.lcov
+          file coverage.lcov
+          cat coverage.lcov | grep -E "^SF:" || echo "Неверный формат lcov"
       
       - name: Clean up old coverage files
-        run: rm -f coverage.xml coverage.total.json
+        run: rm -f coverage.xml coverage.json coverage.total.json
+      
+      - name: Install cc-reporter
+        run: |
+          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > cc-reporter
+          chmod +x cc-reporter
+          ./cc-reporter --version
       
       - name: Upload to CodeClimate
         if: github.ref == 'refs/heads/main'
@@ -38,5 +48,5 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
-          coverageLocations: ${{ github.workspace }}/coverage.json:coverage.py
+          coverageLocations: ${{ github.workspace }}/coverage.lcov:lcov
           debug: true
