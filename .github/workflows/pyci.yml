@@ -45,7 +45,8 @@ jobs:
       
       - name: Upload to CodeClimate
         if: github.ref == 'refs/heads/main'
+        uses: codeclimate/codeclimate-action@v1
+        with:
+          coverageCommand: ./cc-reporter upload-coverage -i coverage.total.json
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-        run: |
-          ./cc-reporter upload-coverage -i coverage.total.json --debug
