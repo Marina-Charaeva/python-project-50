@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest pytest-cov==4.1.0 coverage==7.2.0 jq flake8
+          pip install pytest pytest-cov coverage jq flake8
           pip install -e .[test]
       
       - name: Run linter
@@ -36,9 +36,11 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         run: |
+          # Инициализация репортера
           ./cc-reporter before-build
-          python -m coverage json -o coverage.json
+          # Форматирование отчета
           ./cc-reporter format-coverage coverage.xml -t coverage.py -o coverage.codeclimate.json
+          # Суммирование покрытия
           ./cc-reporter sum-coverage coverage.codeclimate.json -o coverage.total.json -p 1
       
       - name: Upload to CodeClimate
@@ -46,4 +48,4 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         run: |
-          ./cc-reporter upload-coverage -i coverage.total.json
+          ./cc-reporter upload-coverage -i coverage.total.json --debug
