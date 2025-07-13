@@ -29,11 +29,9 @@ jobs:
       
       - name: Upload to CodeClimate
         if: github.ref == 'refs/heads/main'
-        uses: paambaati/codeclimate-action@v3.2.0
+        uses: paambaati/codeclimate-action@v5.0.0
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-          CODECLIMATE_API_HOST: https://api.codeclimate.com  
         with:
-          coverageCommand: python -m pytest --cov=gendiff --cov-report=xml
           coverageLocations: ${{ github.workspace }}/coverage.xml:cobertura
           debug: true
