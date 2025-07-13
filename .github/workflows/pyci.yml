@@ -2,7 +2,7 @@ name: CI Pipeline
 on: [push, pull_request]
 
 env:
-  CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
+  QLTY_TOKEN: ${{ secrets.CC_TEST_REPORTER_ID }}  # Используем существующий секрет
 
 jobs:
   test-and-coverage:
@@ -25,24 +25,28 @@ jobs:
         run: |
           python -m pytest --cov=gendiff --cov-report=xml:coverage.xml --cov-report=term tests/
       
-      - name: Download Code Climate reporter
+      - name: Prepare QLTY coverage data
         run: |
-          curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-reporter
-          chmod +x ./cc-reporter
-          ./cc-reporter --version
-      
-      - name: Prepare coverage data
-        run: |
-          # Initialize build
-          ./cc-reporter before-build
+          # Преобразуем coverage.xml в формат, понятный QLTY
+          pip install coverage-lcov
+          python -m coverage lcov -o coverage.lcov
           
-          # Convert coverage.xml to Code Climate format
-          ./cc-reporter format-coverage coverage.xml -t coverage.py -o coverage.codeclimate.json
-          
-          # Combine coverage reports (if needed)
-          ./cc-reporter sum-coverage coverage.codeclimate.json -o coverage.total.json
+          # Дополнительно можно создать JSON (если требуется)
+          python -m coverage json -o coverage.json
       
-      - name: Upload coverage to Code Climate
+      - name: Upload to QLTY
         if: github.ref == 'refs/heads/main'
         run: |
-          ./cc-reporter upload-coverage -i coverage.total.json --debug
+          echo "Uploading coverage to QLTY..."
+          curl -v -X POST \
+            -H "Authorization: Bearer $QLTY_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data-binary @coverage.lcov \
+            "https://qlty.sh/api/v1/coverage"
+          
+          # Альтернативно можно загрузить JSON
+          # curl -X POST \
+          #   -H "Authorization: Bearer $QLTY_TOKEN" \
+          #   -H "Content-Type: application/json" \
+          #   -d @coverage.json \
+          #   "https://qlty.sh/api/v1/coverage"
