@@ -27,6 +27,7 @@ jobs:
           ls -la
           head -n 5 coverage.json
           file coverage.json
+          cat coverage.json | jq . || echo "Invalid JSON in coverage.json"
       
       - name: Clean up old coverage files
         run: rm -f coverage.xml coverage.total.json
@@ -37,5 +38,5 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
         with:
-          coverageLocations: ${{ github.workspace }}/coverage.json:codeclimate
+          coverageLocations: ${{ github.workspace }}/coverage.json:coverage.py
           debug: true
