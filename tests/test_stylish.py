@@ -16,7 +16,10 @@ def read_file(file_path):
 @pytest.mark.parametrize("file1, file2, expected", [
     ('file1.json', 'file2.json', 'expected_stylish.txt'),
     ('file1.yml', 'file2.yml', 'expected_stylish.txt'),
-    ('file1.json', 'file2.yml', 'expected_stylish.txt'),  # тест на смешанные типы
+    (
+        'file1.json',
+        'file2.yml',
+        'expected_stylish.txt'),  # тест на смешанные типы
 ])
 def test_stylish_format(file1, file2, expected):
     file1_path = get_fixture_path(file1)

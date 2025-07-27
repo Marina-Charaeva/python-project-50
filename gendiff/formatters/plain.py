@@ -15,7 +15,8 @@ def format_plain(diff, parent_key=''):
             lines.append(f"Property '{current_key}' was removed")
         elif node['type'] == 'changed':
             lines.append(
-                f"Property '{current_key}' was updated. From {old_value} to {new_value}"
+                f"Property '{current_key}' was updated. "
+                f"From {old_value} to {new_value}"
             )
     return '\n'.join(line for line in lines if line)
 

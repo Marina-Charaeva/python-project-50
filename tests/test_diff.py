@@ -27,10 +27,12 @@ def test_flat_json_diff(file1, file2, expected):
         print("Actual:\n", repr(result))
     assert result == expected_result
 
+
 def test_identical_files():
     file_path = get_fixture_path('file1.json')
     result = generate_diff(file_path, file_path)
     assert result == '{\n}'
+
 
 def test_empty_files():
     file_path = get_fixture_path('empty.json')

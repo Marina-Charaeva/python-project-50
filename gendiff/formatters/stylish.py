@@ -10,15 +10,18 @@ def format_stylish(diff, indent=0):
             lines.append(f"{current_indent}    }}")
         elif node['type'] == 'added':
             lines.append(
-                f"{current_indent}  + {key}: {format_value(node['value'], indent + 4)}"
+                f"{current_indent}  + {key}: "
+                f"{format_value(node['value'], indent + 4)}"
             )
         elif node['type'] == 'removed':
             lines.append(
-                f"{current_indent}  - {key}: {format_value(node['value'], indent + 4)}"
+                f"{current_indent}  - {key}: "
+                f"{format_value(node['value'], indent + 4)}"
             )
         elif node['type'] == 'unchanged':
             lines.append(
-                f"{current_indent}    {key}: {format_value(node['value'], indent + 4)}"
+                f"{current_indent}    {key}: "
+                f"{format_value(node['value'], indent + 4)}"
             )
         elif node['type'] == 'changed':
             lines.append(
