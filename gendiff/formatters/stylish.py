@@ -1,30 +1,36 @@
-def format_value(value):  # Вынесено в отдельную функцию
-    if isinstance(value, dict):
-        return '[complex value]'
-    elif value is None:
-        return 'null'
-    elif isinstance(value, bool):
-        return str(value).lower()
-    return str(value)
-
-
-def walk(node, depth):  # Основная логика вынесена
+def format_stylish(diff, indent=0):
+    if not diff:
+        return '{}' if indent == 0 else ''
     lines = []
-    indent = '    ' * depth
-    for key in sorted(node.keys()):
-        meta = node[key]
-        if meta['type'] == 'nested':
-            lines.append(f"{indent}    {key}: {{")
-            lines.append(walk(meta['children'], depth + 1))
-            lines.append(f"{indent}    }}")
-        elif meta['type'] == 'changed':
-            lines.append(f"{indent}  - {key}: {format_value(meta['old_value'])}")
-            lines.append(f"{indent}  + {key}: {format_value(meta['new_value'])}")
-        else:
-            prefix = {'added': '+', 'removed': '-', 'unchanged': ' '}[meta['type']]
-            lines.append(f"{indent}  {prefix} {key}: {format_value(meta['value'])}")
+    current_indent = ' ' * indent
+    for key, node in sorted(diff.items()):
+        if node['type'] == 'nested':
+            lines.append(f"{current_indent}    {key}: {{")
+            lines.append(format_stylish(node['children'], indent + 4))
+            lines.append(f"{current_indent}    }}")
+        elif node['type'] == 'added':
+            lines.append(f"{current_indent}  + {key}: {format_value(node['value'], indent + 4)}")
+        elif node['type'] == 'removed':
+            lines.append(f"{current_indent}  - {key}: {format_value(node['value'], indent + 4)}")
+        elif node['type'] == 'unchanged':
+            lines.append(f"{current_indent}    {key}: {format_value(node['value'], indent + 4)}")
+        elif node['type'] == 'changed':
+            lines.append(f"{current_indent}  - {key}: {format_value(node['old_value'], indent + 4)}")
+            lines.append(f"{current_indent}  + {key}: {format_value(node['new_value'], indent + 4)}")
+    if indent == 0:
+        return '{\n' + '\n'.join(lines) + '\n}'
     return '\n'.join(lines)
 
 
-def format_stylish(diff):  # Теперь сложность <7
-    return '{\n' + walk(diff, 0) + '\n}'
+def format_value(value, indent):
+    if isinstance(value, bool):
+        return str(value).lower()
+    elif value is None:
+        return 'null'
+    elif isinstance(value, dict):
+        lines = ['{']
+        for k, v in value.items():
+            lines.append(f"{' ' * (indent + 4)}{k}: {format_value(v, indent + 4)}")
+        lines.append(f"{' ' * indent}}}")
+        return '\n'.join(lines)
+    return str(value)

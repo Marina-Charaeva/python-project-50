@@ -1,4 +1,4 @@
 from gendiff.diff import generate_diff
-from gendiff.formatters.stylish import format_stylish
+from gendiff.parsers import parse_file
 
-__all__ = ['generate_diff', 'format_stylish']
+__all__ = ['generate_diff', 'parse_file']

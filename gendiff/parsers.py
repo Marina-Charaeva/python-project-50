@@ -4,13 +4,13 @@ from pathlib import Path
 import yaml
 
 
-def parse_file_data(file_path):
+def parse_file(file_path):
     extension = get_file_extension(file_path)
-    with open(file_path, 'r') as file:
+    with open(file_path, 'r') as f:
         if extension == '.json':
-            return json.load(file)
+            return json.load(f)
         elif extension in ('.yml', '.yaml'):
-            return yaml.safe_load(file) or {}
+            return yaml.safe_load(f) or {}
         raise ValueError(f"Unsupported file format: {extension}")
 
 

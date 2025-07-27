@@ -1,0 +1,143 @@
+============================= test session starts ==============================
+platform linux -- Python 3.13.3, pytest-8.4.1, pluggy-1.6.0 -- /home/charaeva/python-project-50/.venv/bin/python
+cachedir: .pytest_cache
+rootdir: /home/charaeva/python-project-50
+configfile: pyproject.toml
+plugins: cov-4.1.0
+collecting ... collected 6 items
+
+tests/test_stylish.py::test_stylish_format[file1.json-file2.json-expected_stylish.txt] FAILED [ 16%]
+tests/test_stylish.py::test_stylish_format[file1.yml-file2.yml-expected_stylish.txt] FAILED [ 33%]
+tests/test_stylish.py::test_stylish_format[file1.json-file2.yml-expected_stylish.txt] FAILED [ 50%]
+tests/test_stylish.py::test_all_formatters[file1.json-file2.json-stylish-expected_stylish.txt] FAILED [ 66%]
+tests/test_stylish.py::test_all_formatters[file1.json-file2.json-plain-expected_plain.txt] PASSED [ 83%]
+tests/test_stylish.py::test_all_formatters[file1.json-file2.json-json-expected_json.txt] PASSED [100%]
+
+=================================== FAILURES ===================================
+_______ test_stylish_format[file1.json-file2.json-expected_stylish.txt] ________
+
+file1 = 'file1.json', file2 = 'file2.json', expected = 'expected_stylish.txt'
+
+    @pytest.mark.parametrize("file1, file2, expected", [
+        ('file1.json', 'file2.json', 'expected_stylish.txt'),
+        ('file1.yml', 'file2.yml', 'expected_stylish.txt'),
+        ('file1.json', 'file2.yml', 'expected_stylish.txt'),  # тест на смешанные типы
+    ])
+    def test_stylish_format(file1, file2, expected):
+        file1_path = get_fixture_path(file1)
+        file2_path = get_fixture_path(file2)
+        expected_path = get_fixture_path(expected)
+    
+        expected_result = read_file(expected_path)
+        actual_result = generate_diff(file1_path, file2_path)
+    
+>       assert actual_result == expected_result
+E       AssertionError: assert '{\n    commo...n        }\n}' == '{\n    commo...500\n    }\n}'
+E         
+E           {
+E               common: {
+E         -       + follow: false
+E         +         + follow: false
+E         ? ++
+E         -         setting1: Value 1...
+E         
+E         ...Full output truncated (94 lines hidden), use '-vv' to show
+
+tests/test_stylish.py:29: AssertionError
+________ test_stylish_format[file1.yml-file2.yml-expected_stylish.txt] _________
+
+file1 = 'file1.yml', file2 = 'file2.yml', expected = 'expected_stylish.txt'
+
+    @pytest.mark.parametrize("file1, file2, expected", [
+        ('file1.json', 'file2.json', 'expected_stylish.txt'),
+        ('file1.yml', 'file2.yml', 'expected_stylish.txt'),
+        ('file1.json', 'file2.yml', 'expected_stylish.txt'),  # тест на смешанные типы
+    ])
+    def test_stylish_format(file1, file2, expected):
+        file1_path = get_fixture_path(file1)
+        file2_path = get_fixture_path(file2)
+        expected_path = get_fixture_path(expected)
+    
+        expected_result = read_file(expected_path)
+        actual_result = generate_diff(file1_path, file2_path)
+    
+>       assert actual_result == expected_result
+E       AssertionError: assert '{\n    commo...n        }\n}' == '{\n    commo...500\n    }\n}'
+E         
+E           {
+E               common: {
+E         -       + follow: false
+E         +         + follow: false
+E         ? ++
+E         -         setting1: Value 1...
+E         
+E         ...Full output truncated (94 lines hidden), use '-vv' to show
+
+tests/test_stylish.py:29: AssertionError
+________ test_stylish_format[file1.json-file2.yml-expected_stylish.txt] ________
+
+file1 = 'file1.json', file2 = 'file2.yml', expected = 'expected_stylish.txt'
+
+    @pytest.mark.parametrize("file1, file2, expected", [
+        ('file1.json', 'file2.json', 'expected_stylish.txt'),
+        ('file1.yml', 'file2.yml', 'expected_stylish.txt'),
+        ('file1.json', 'file2.yml', 'expected_stylish.txt'),  # тест на смешанные типы
+    ])
+    def test_stylish_format(file1, file2, expected):
+        file1_path = get_fixture_path(file1)
+        file2_path = get_fixture_path(file2)
+        expected_path = get_fixture_path(expected)
+    
+        expected_result = read_file(expected_path)
+        actual_result = generate_diff(file1_path, file2_path)
+    
+>       assert actual_result == expected_result
+E       AssertionError: assert '{\n    commo...n        }\n}' == '{\n    commo...500\n    }\n}'
+E         
+E           {
+E               common: {
+E         -       + follow: false
+E         +         + follow: false
+E         ? ++
+E         -         setting1: Value 1...
+E         
+E         ...Full output truncated (94 lines hidden), use '-vv' to show
+
+tests/test_stylish.py:29: AssertionError
+___ test_all_formatters[file1.json-file2.json-stylish-expected_stylish.txt] ____
+
+file1 = 'file1.json', file2 = 'file2.json', format_name = 'stylish'
+expected = 'expected_stylish.txt'
+
+    @pytest.mark.parametrize("file1, file2, format_name, expected", [
+        ('file1.json', 'file2.json', 'stylish', 'expected_stylish.txt'),
+        ('file1.json', 'file2.json', 'plain', 'expected_plain.txt'),
+        ('file1.json', 'file2.json', 'json', 'expected_json.txt'),
+    ])
+    def test_all_formatters(file1, file2, format_name, expected):
+        file1_path = get_fixture_path(file1)
+        file2_path = get_fixture_path(file2)
+        expected_path = get_fixture_path(expected)
+    
+        expected_result = read_file(expected_path)
+        actual_result = generate_diff(file1_path, file2_path, format_name)
+    
+>       assert actual_result == expected_result
+E       AssertionError: assert '{\n    commo...n        }\n}' == '{\n    commo...500\n    }\n}'
+E         
+E           {
+E               common: {
+E         -       + follow: false
+E         +         + follow: false
+E         ? ++
+E         -         setting1: Value 1...
+E         
+E         ...Full output truncated (94 lines hidden), use '-vv' to show
+
+tests/test_stylish.py:45: AssertionError
+=========================== short test summary info ============================
+FAILED tests/test_stylish.py::test_stylish_format[file1.json-file2.json-expected_stylish.txt]
+FAILED tests/test_stylish.py::test_stylish_format[file1.yml-file2.yml-expected_stylish.txt]
+FAILED tests/test_stylish.py::test_stylish_format[file1.json-file2.yml-expected_stylish.txt]
+FAILED tests/test_stylish.py::test_all_formatters[file1.json-file2.json-stylish-expected_stylish.txt]
+========================= 4 failed, 2 passed in 0.30s ==========================
