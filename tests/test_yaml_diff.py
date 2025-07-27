@@ -2,13 +2,16 @@ import os
 import pytest
 from gendiff import generate_diff
 
+
 def get_fixture_path(file_name):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     return os.path.join(current_dir, 'fixtures', file_name)
 
+
 def read_file(file_path):
     with open(file_path, 'r') as f:
         return f.read().rstrip()
+
 
 @pytest.mark.parametrize("file1, file2, expected", [
     ('file1.yml', 'file2.yml', 'expected_diff.txt'),

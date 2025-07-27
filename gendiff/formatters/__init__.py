@@ -15,4 +15,5 @@ def format_diff(diff, format_name='stylish'):
         return format_yaml(diff)
     raise ValueError(f"Unknown format: {format_name}")
 
+
 __all__ = ['format_diff']

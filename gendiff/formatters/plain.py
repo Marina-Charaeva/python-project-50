@@ -8,7 +8,9 @@ def format_plain(diff, parent_key=''):
         if node['type'] == 'nested':
             lines.append(format_plain(node['children'], current_key))
         elif node['type'] == 'added':
-            lines.append(f"Property '{current_key}' was added with value: {value}")
+            lines.append(
+                f"Property '{current_key}' was added with value: {value}"
+            )
         elif node['type'] == 'removed':
             lines.append(f"Property '{current_key}' was removed")
         elif node['type'] == 'changed':

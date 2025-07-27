@@ -6,7 +6,10 @@ def format_json(diff):
         result = {}
         for key, value in sorted(node.items()):
             if value['type'] == 'nested':
-                result[key] = {'type': 'nested', 'children': convert(value['children'])}
+                result[key] = {
+                    'type': 'nested',
+                    'children': convert(value['children'])
+                }
             elif value['type'] == 'added':
                 result[key] = {'type': 'added', 'value': value['value']}
             elif value['type'] == 'removed':
