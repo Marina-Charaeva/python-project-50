@@ -1,52 +1,32 @@
 name: CI Pipeline
 on: [push, pull_request]
-
-env:
-  QLTY_TOKEN: ${{ secrets.CC_TEST_REPORTER_ID }}  # Используем существующий секрет
-
 jobs:
   test-and-coverage:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      
+        with:
+          fetch-depth: 0 # Отключаем shallow clone для точного анализа SonarQube
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pytest pytest-cov coverage
           pip install -e .[test]
-      
       - name: Run tests with coverage
         run: |
           python -m pytest --cov=gendiff --cov-report=xml:coverage.xml --cov-report=term tests/
-      
-      - name: Prepare QLTY coverage data
-        run: |
-          # Преобразуем coverage.xml в формат, понятный QLTY
-          pip install coverage-lcov
-          python -m coverage lcov -o coverage.lcov
-          
-          # Дополнительно можно создать JSON (если требуется)
-          python -m coverage json -o coverage.json
-      
-      - name: Upload to QLTY
-        if: github.ref == 'refs/heads/main'
-        run: |
-          echo "Uploading coverage to QLTY..."
-          curl -v -X POST \
-            -H "Authorization: Bearer $QLTY_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data-binary @coverage.lcov \
-            "https://qlty.sh/api/v1/coverage"
-          
-          # Альтернативно можно загрузить JSON
-          # curl -X POST \
-          #   -H "Authorization: Bearer $QLTY_TOKEN" \
-          #   -H "Content-Type: application/json" \
-          #   -d @coverage.json \
-          #   "https://qlty.sh/api/v1/coverage"
+      - name: SonarQubeScan
+        uses: SonarSource/sonarqube-scan-action@v5
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        with:
+          args: >
+            -Dsonar.projectKey=Marina-Charaeva_python-project-50
+            -Dsonar.organization=marina-charaeva
+            -Dsonar.python.coverage.reportPaths=coverage.xml
+            -Dsonar.coverage.exclusions=tests/**
+            -Dsonar.exclusions=tests/**

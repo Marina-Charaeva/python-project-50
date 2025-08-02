@@ -4,7 +4,7 @@ from gendiff import generate_diff
 
 
 def get_fixture_path(filename):
-    return os.path.join('tests/fixtures', filename)
+    return os.path.join('tests/test_data', filename)
 
 
 def read_file(filepath):

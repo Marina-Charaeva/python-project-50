@@ -20,6 +20,6 @@ test:
 	PYTHONPATH=$(shell pwd) pytest -v tests/
 
 test-coverage:
-	python -m pytest --cov=gendiff --cov-report xml tests/
+	python -m pytest --cov=gendiff --cov-report=xml:coverage.xml
 
 .PHONY: test lint install
